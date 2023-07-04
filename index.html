@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Management System</title>
+    <style>
+        body {
+            background-color: black;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        input {
+            padding: 10px;
+            background-color: black;
+            padding-right: 10px;
+            margin-right: 30px;
+            margin-top: 20px;
+            border: 1px solid white;
+            color: white;
+        }
+
+        .divv {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .btn {
+            display: block;
+            margin-top: 25px;
+            padding: 10px 120px;
+        }
+
+        .search {
+            width: 620px;
+            margin-top: 60px;
+        }
+
+        table {
+            margin-top: 50px;
+            width: 640px;
+            border-collapse: collapse;
+            border: 1px solid white;
+            height: 200px;
+        }
+
+        th, td {
+            border: 1px solid white;
+            padding: 8px;
+            font-weight: normal;
+        }
+        .edit-symbol:before {
+            content: "✎";
+            margin-left: 20px;
+        }
+        .delete-symbol:before {
+            content: "\e872";
+            font-family: 'Material Symbols Outlined';
+            font-weight: 100;
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-lRKyFqJLqc4mF6OcAvn7QCr8GFmJv/eMauplhEHxTyfcHho2R8fki4r8D9kaP2hsmmTXQxE6U0BB8kOwuZIVhA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+</head>
+<body>
+    <h1>Student Management CRUD</h1>
+
+    <form class="divv">
+        <div class="inputs">
+            <input type="text" class="text" id="name" placeholder="Name">
+            <input type="text" class="email" id="email" placeholder="Email">
+            <input type="text" class="text" id="gpa" placeholder="GPA">
+        </div>
+        <div class="inner">
+            <input type="number" class="number" id="age" placeholder="Age">
+            <input type="text" class="text" id="degree" placeholder="Degree">
+        </div>
+    </form>
+
+    <button class="btn" onclick="addStudent()">Add Student</button>
+
+    <input type="text" class="search" id="searchInput" placeholder="Search by Name, email or degree" oninput="searchStudents()">
+
+    <table id="studentTable">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Student Name</th>
+                <th>Email</th>
+                <th>Age</th>
+                <th>GPA</th>
+                <th class="degree">Degree</th>
+            </tr>
+        </thead>
+        <tbody id="studentTableBody">
+        </tbody>
+    </table>
+
+    <script>
+        const students = [
+            { ID: 1, name: 'Alice', age: 21, grade: 'A', degree: 'Btech', email: 'alice@example.com' },
+            { ID: 2, name: 'Bob', age: 22, grade: 'B', degree: 'MBA', email: 'bob@example.com' },
+            { ID: 3, name: 'Charlie', age: 20, grade: 'C', degree: 'Arts', email: 'charlie@example.com' }
+        ];
+
+        function displayStudents(filteredStudents) {
+            const tableBody = document.getElementById('studentTableBody');
+            tableBody.innerHTML = '';
+
+            const studentsToDisplay = filteredStudents || students;
+
+            studentsToDisplay.forEach((student, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.ID}</td>
+                    <td>${student.name}</td>
+                    <td>${student.email}</td>
+                    <td>${student.age}</td>
+                    <td>${student.grade}</td>
+                    <td>${student.degree} <span class="edit-symbol" onclick="editStudent(${index})"></span> <span class="delete-symbol" onclick="deleteStudent(${index})"></span></td>
+                `;
+
+                tableBody.appendChild(row);
+            });
+        }
+
+        function addStudent() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const age = document.getElementById('age').value;
+            const gpa = document.getElementById('gpa').value;
+            const degree = document.getElementById('degree').value;
+
+            const student = {
+                ID: students.length + 1,
+                name: name,
+                email: email,
+                age: age,
+                grade: gpa,
+                degree: degree
+            };
+
+            students.push(student);
+            displayStudents();
+
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('gpa').value = '';
+            document.getElementById('degree').value = '';
+        }
+
+        function editStudent(index) {
+            const student = students[index];
+
+            document.getElementById('name').value = student.name;
+            document.getElementById('email').value = student.email;
+            document.getElementById('age').value = student.age;
+            document.getElementById('gpa').value = student.grade;
+            document.getElementById('degree').value = student.degree;
+
+            const addButton = document.querySelector('.btn');
+            addButton.innerHTML = 'Edit Student';
+            addButton.onclick = function() {
+                updateStudent(index);
+            };
+        }
+
+        function updateStudent(index) {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const age = document.getElementById('age').value;
+            const gpa = document.getElementById('gpa').value;
+            const degree = document.getElementById('degree').value;
+
+            students[index].name = name;
+            students[index].email = email;
+            students[index].age = age;
+            students[index].grade = gpa;
+            students[index].degree = degree;
+
+            displayStudents();
+
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('age').value = '';
+            document.getElementById('gpa').value = '';
+            document.getElementById('degree').value = '';
+            document.querySelector('.btn').innerHTML = 'Add Student';
+            document.querySelector('.btn').onclick = addStudent;
+        }
+
+        function deleteStudent(index) {
+            students.splice(index, 1);
+            displayStudents();
+        }
+
+        function searchStudents() {
+            const searchInput = document.getElementById('searchInput').value.toLowerCase();
+            const filteredStudents = students.filter(student => {
+                return (
+                    student.name.toLowerCase().includes(searchInput) ||
+                    student.email.toLowerCase().includes(searchInput) ||
+                    student.degree.toLowerCase().includes(searchInput)
+                );
+            });
+            displayStudents(filteredStudents);
+        }
+
+        displayStudents();
+    </script>
+</body>
+</html>
